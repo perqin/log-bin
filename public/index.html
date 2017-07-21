@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>文件日志</title>
+		
+		<style>
+			html,
+			body {
+				margin: 0;
+    			padding: 0;
+			}
+			
+			ul {
+				display: inline-block;
+			    margin: 0;
+			    padding: 0;
+			    width: 20%;
+			    vertical-align: top;
+			}
+			
+			li {
+				margin: 10px;
+			}
+			
+			div {
+				display: inline-block;
+			    width: 70%;
+			    height: 100%;
+			    vertical-align: top;
+			}
+		</style>
+	</head>
+	<body>
+		<ul id="list"></ul>
+		
+		<div id="container"></div>
+		
+		<script type="text/javascript" src="ajax.min.js" ></script>
+		<script type="text/javascript" src="Network.js" ></script>
+		<script>
+			var requestURL = 'http://119.29.134.105:7080/';
+			
+			setTimeout(function() {
+				window.Network.ajax.get(requestURL + 'logs', {}, function(fileList) {
+					if (typeof fileList === "string") {
+						fileList = JSON.parse(fileList);
+					}
+					
+					var files = fileList.map(function(filename, idx) {
+						return '<li>' + filename + '</li>'
+					});
+					
+					document.getElementById("list").innerHTML = files.join('');
+				});
+			}, 1000);
+			
+			document.getElementById("list").onclick = function(e) {
+				var target = e.target;
+				var filename = target.innerText;
+				
+				window.Network.ajax.get(requestURL + 'logs/' + filename, {}, function(filecontent) {
+					document.getElementById("container").innerText = filecontent;
+				})
+			}
+		</script>
+	</body>
+</html>
